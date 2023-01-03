@@ -9,7 +9,6 @@ head(collegeData)
 str(collegeData)
 
 
-
                 #Number students
 
 ##Number of students per major category     #Melhorar labels  #V
