@@ -16,7 +16,7 @@ collegeData <- read_csv("all-ages.csv")
 collegeWomenData <-read_csv("women-stem.csv")
 ```
 ### Important note
-Even tough the data comes from a reliable source it is outdated (2017) and may not be accurate anymore.
+Even tough the data comes from a reliable source it is outdated (2010-2012) and may not be accurate anymore.
 
 # Analyse college majors and their graduates
 
@@ -36,8 +36,6 @@ collegeData %>%
   scale_y_continuous(labels = comma, expand = expansion(mult = c(0, .25))) +
   coord_flip()
 ```
-</br>
-Business Majors are the most popular followed by Education and Humanities & Liberal Arts. In the other end are Interdisciplinary, Agriculture & Natural Resources and Law % Puclic Policy majors
 
 ```{r top 15 more students per major}
 collegeData %>%
