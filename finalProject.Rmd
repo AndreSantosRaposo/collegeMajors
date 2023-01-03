@@ -5,13 +5,13 @@ date: "2023-01-02"
 output: html_document
 ---
 Load packadges
-```{r}
+```{r message=FALSE}
 require(tidyverse)
 require(scales)
 ```
 
 Import Data
-```{r}
+```{r message=FALSE}
 collegeData <- read_csv("all-ages.csv")
 collegeWomenData <-read_csv("women-stem.csv")
 ```
@@ -19,8 +19,14 @@ collegeWomenData <-read_csv("women-stem.csv")
 Even tough the data comes from a reliable source it is outdated (2010-2012) and may not be accurate anymore.
 
 # Analyse college majors and their graduates
+### Summary and insights
+- Business majors have the  highest number of students, have a low unemployment rate and are between the highest paying categories.
+- There is a lot of reasons why interdisciplinary majors have so few students, like the fact that it's the one with the highest unemployment rate and the lowest average salary for those who are employed.
+- Four of the top five best paying categories are in STEM, with business being the exception and coming in fourth.
+- Science is at the top of the list of options for STEM majors for female students, while technology and mechanics are at the bottom.
 
-```{r students per major category}
+## Number of students
+```{r Students per major category}
 collegeData %>%
   group_by(Major_category) %>% 
   summarize(Total = sum(Total)) %>% 
@@ -49,6 +55,7 @@ collegeData %>%
   geom_text(aes(x = Total, y = reorder(Major, Total), label= format(Total,digits=5)), color="white",fontface="bold",hjust = 1.1)
 
 ```
+
 ```{r top 15 less students per major}
 collegeData %>%
   arrange(Total) %>% 
@@ -62,8 +69,15 @@ collegeData %>%
 
 ```
 
+### Number of student insights:
+- Business, Education, Humanities & Liberal Arts have the majors with more students.
+- Interdisciplinary, Agriculture & Natural Resources, Law & Public Policy have the majors with less students.
+- The three most popular majors are in the business category, and five out of the fifteen are business majors.
+- Despite the fact that education is the second most popular category, 2 in 3 majors with fewer students are in this area.
+
+
 # Female to Male distribution in STEM majors
-```{r}
+```{r female percentage in STEM major categories}
 collegeWomenData %>% 
   group_by(Major_category) %>%
   summarize(ShareWomen=mean(ShareWomen)) %>% 
@@ -76,7 +90,7 @@ collegeWomenData %>%
 
 ```
 
-```{r}
+```{r Top 15 STEM majors with the highest female percentage}
 collegeWomenData %>% 
   arrange(desc(ShareWomen)) %>% 
   mutate(Major = str_to_title(Major)) %>% 
@@ -85,7 +99,7 @@ collegeWomenData %>%
              label= paste0(format(ShareWomen*100,digits=3), "%"))) +
   geom_col(fill = "darkblue") +
   geom_text(hjust = 1.3, nudge_y = .01, color="white", fontface="bold") + 
-  labs(title= "Top 15 STEM majors with the  female percentage") + 
+  labs(title= "Top 15 STEM majors with the highest female percentage") + 
   ylab("Percentage of females") + xlab("Major") +
   theme(axis.title.x = element_text(margin = margin(t = 20, r = 0, b = 0, l = 0)),
         axis.title.y = element_text(margin = margin(t = 0, r = 25, b = 0, l = 0)),
@@ -95,7 +109,7 @@ collegeWomenData %>%
   coord_flip()
 ```
 
-```{r}
+```{r Top 15 STEM majors with the lowest female percentage}
 collegeWomenData %>% 
   arrange(ShareWomen) %>% 
   mutate(Major = str_to_title(Major)) %>% 
@@ -114,8 +128,12 @@ collegeWomenData %>%
   coord_flip()
 ```
 
+### Female distribution insights:
+- Science is at the top of the list of options for STEM majors for female students, while technology and mechanics are at the bottom.
+
+
 # Unemployment
-```{r}
+```{r Unemployment rate per major category}
 collegeData %>%
   group_by(Major_category) %>% 
   summarise(average_rate= mean(Unemployment_rate)) %>% 
@@ -127,7 +145,7 @@ collegeData %>%
   geom_text(aes(x = average_rate, y = reorder(Major_category, average_rate), label= paste0(format(average_rate*100,digits=3), "%")), color="white",fontface="bold",hjust = 1.1)
 ```
 
-```{r}
+```{r Top 15 majors with the biggest unemployment rate}
 collegeData %>%
   group_by(Major) %>%   
   summarise(average_rate= mean(Unemployment_rate)) %>%
@@ -142,7 +160,7 @@ collegeData %>%
 
 ```
 
-```{r}
+```{r Top 15 majors with the smallest unemployment rate}
 collegeData %>%
   group_by(Major) %>%   
   summarise(average_rate= mean(Unemployment_rate)) %>%
@@ -156,9 +174,17 @@ collegeData %>%
   geom_text(aes(x = average_rate, y = reorder(Major, average_rate), label= paste0(format(average_rate*100,digits=3), "%")), color="white",fontface="bold",hjust = 1.1)
 ```
 
-#Salaries
+### Unemployment insights
+- Interdisciplinary is the third category with the biggest unemployment rate while being the one with the least students.
+- The arts majors have the highest unemployment rate.
+- Miscellaneous Fine Arts accompanies it's category, Arts, being the major with the highest unemployment rate.
+- Military technology is the third least popular major and has the third highest unemployment rate.
+- The fact that educational administration and supervision is one of the majors that launches fewer students into the job market may contribute to the fact that all of those considered in the survey are employed.
+- Geological and geophysical engineering, like the previous major, has a small student body and no unemployment.
 
-```{r}
+# Salaries 
+
+```{r Average salary per major category}
 collegeData %>%
   group_by(Major_category) %>% 
   summarise(average_salary= mean(Median)) %>% 
@@ -170,7 +196,18 @@ collegeData %>%
 
 ```
 
-```{r}
+```{r Top 15 major with highest average salaries}
+collegeData %>%
+  arrange(desc(Median)) %>% 
+  slice(1:15) %>% 
+  ggplot()+
+  geom_col(mapping=aes(x=Median, y=reorder(Major, Median)), fill="darkblue")+
+  theme(axis.title.x = element_text(margin = margin(t = 20, r = 0, b = 0, l = 0)) , axis.title.y = element_text(margin = margin(t = 0, r = 25, b = 0, l = 0)),plot.title = element_text(hjust = 0.5),plot.title.position = "plot")+
+  labs(title= "Top 15 major with highest average salaries") + xlab("Salary")+ ylab("Major") +scale_x_continuous(labels=scales::dollar_format())+
+  geom_text(aes(x = Median, y = reorder(Major, Median), label= paste0("$",Median)), color="white",fontface="bold",hjust = 1.1)
+```
+
+```{r Top 15 major with lowest average salaries}
 collegeData %>%
   arrange(Median) %>% 
   slice(1:15) %>% 
@@ -181,17 +218,15 @@ collegeData %>%
   geom_text(aes(x = Median, y = reorder(Major, Median), label= paste0("$",Median)), color="white",fontface="bold",hjust = 1.1)
 ```
 
-```{r}
-collegeData %>%
-  arrange(desc(Median)) %>% 
-  slice(1:15) %>% 
-  ggplot()+
-  geom_col(mapping=aes(x=Median, y=reorder(Major, Median)), fill="darkblue")+
-  theme(axis.title.x = element_text(margin = margin(t = 20, r = 0, b = 0, l = 0)) , axis.title.y = element_text(margin = margin(t = 0, r = 25, b = 0, l = 0)),plot.title = element_text(hjust = 0.5),plot.title.position = "plot")+
-  labs(title= "Top 15 major with highest average salaries") + xlab("Salary")+ ylab("Major") +scale_x_continuous(labels=scales::dollar_format())+
-  geom_text(aes(x = Median, y = reorder(Major, Median), label= paste0("$",Median)), color="white",fontface="bold",hjust = 1.1)
+### Salaries insights
+- Engineering, Computers & Mathematics, and Physical Sciences are the top 3 categories with the highest salaries.
+- Four of the top five categories are in STEM, with business being the exception and coming in fourth.
+- In the same order, the three STEM categories with the lowest percentage of female students are the three highest-paying categories.
+- Interdisciplinary, arts, and education majors are among the lowest paid.
+- Twelve out of fifteen of the best-paying majors are in the engineering category.
+- The 15 majors with the lowest average salaries are composed mainly of education and arts majors.
 
-```
+
 
 
 

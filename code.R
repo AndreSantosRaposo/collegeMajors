@@ -2,6 +2,7 @@ install.packages("tidyverse")
 install.packages("scales")
 require(tidyverse)
 require(scales)
+require(stringr)
 
 collegeData <- read_csv("all-ages.csv")
 collegeWomenData <-read_csv("women-stem.csv")
